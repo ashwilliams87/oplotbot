@@ -24,6 +24,7 @@ Artisan::command('generateEventVkConversations  {--chatId=*} {--peerId=*} ', fun
 
 Artisan::command('inspire', function () {
 
+    dump(PHP_EOL);die;
     // $chatId = $this->argument('competitionChatId') == null ? $this->argument('competitionChatId') : null;
     //  $competitionChatId = isset($this->argument('competitionChatId')) ? $this->argument('competitionChatId') : null;
     $chatId = $this->option('chatId');

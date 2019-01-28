@@ -10,6 +10,8 @@ use PhpParser\Error;
 
 class Bot extends Controller
 {
+    private static $excludedIds = [44418, 14363074, 373336876];
+
     /**
      * Store a new user.
      *
@@ -111,7 +113,15 @@ class Bot extends Controller
     {
         //get array of conversation members
         $vkService = VkApi::getInstance(env('VK_API_USER_TOKEN'));
-        $usersIds = $vkService->getConversationsMembers($chatVkId);
+        $usersIdsNotFiltered = array_diff($vkService->getConversationsMembers($chatVkId), self::$excludedIds);
+
+        //we need filter peolple who doesn't want to be a winner
+        $usersIds = [];
+        foreach ($usersIdsNotFiltered as $itemUserId) {
+            if (!in_array($itemUserId, self::$excludedIds)) {
+                $usersIds[] = $itemUserId;
+            }
+        }
 
         //lets the event begin
         $winnerId = User::getRandomId($usersIds);

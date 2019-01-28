@@ -42,6 +42,23 @@ Route::get('/test', function () {
     die;
 });
 
+
+Route::get('/latest', function (Request $request) {
+    $base = $request->query->get('base');
+    $response = file_get_contents('https://api.exchangeratesapi.io/latest?base=' . $base);
+    $result = json_decode($response);
+    if (!is_null($result)) {
+        return response()
+            ->json($result);
+    } else {
+
+        $raw = "{\"base\":\"USD\",\"date\":\"" . Carbon\Carbon::now()->format('Y-m-d') . "\",\"rates\":{\"ISK\":119.7778952935,\"CAD\":1.3314824608,\"MXN\":18.9093953816,\"CHF\":0.9968270756,\"AUD\":1.4048122686,\"CNY\":6.7600035255,\"GBP\":0.7630883131,\"USD\":1.0,\"SEK\":9.0763264587,\"NOK\":8.5532346201,\"TRY\":5.2711087608,\"IDR\":14084.9991186321,\"ZAR\":13.652388507,\"HRK\":6.5498854222,\"EUR\":0.881367883,\"HKD\":7.8460250308,\"ILS\":3.6791820906,\"NZD\":1.4736471003,\"MYR\":4.1325577296,\"JPY\":109.9242023621,\"CZK\":22.6485104883,\"SGD\":1.3566014454,\"RUB\":66.1196016217,\"RON\":4.2030671602,\"HUF\":280.504142429,\"BGN\":1.7237793055,\"INR\":71.0682178741,\"KRW\":1120.1040014102,\"DKK\":6.5806451613,\"THB\":31.6199541689,\"PHP\":52.5841706328,\"PLN\":3.7819495858,\"BRL\":3.7667019214}}";
+        $a = json_decode($raw);
+        return response()
+            ->json($a);
+    }
+});
+
 Route::get('/test/group', function () {
     return '{"status":"Congratulations! You have discovered a nothing!"}';
     //https://oauth.vk.com/authorize?client_id=6816973&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=friends&response_type=token&v=5.52&scope=messages,notify,groups,offline,friends,email
