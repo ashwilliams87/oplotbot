@@ -18,10 +18,6 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-
-//api/vk/message
-//api/vk/event
-
 Route::get('/test', function () {
     return '{"status":"Congratulations! You have discovered a nothing!"}';
     //{"type":"message_new","object":{"date":1546724691,"from_id":14363074,"id":2,"out":0,"peer_id":14363074,"text":"КУУУУ","conversation_message_id":2,"fwd_messages":[],"important":false,"random_id":0,"attachments":[],"is_hidden":false},"group_id":176146542}
@@ -84,8 +80,6 @@ Route::get('/test/debug', function (Request $request) {
     return App::call('App\Http\Controllers\Bot@generateEventAction'
         , ['peerId' => 2000000003]
     );
-    return '{"status":"Congratulations! You have discovered a nothing!"}';
-
 
     return App::call('App\Http\Controllers\Bot@generateBornDateConratulationsAction'
         , ['peerId' => 2000000003]
