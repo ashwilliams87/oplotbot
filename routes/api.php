@@ -84,6 +84,16 @@ Route::get('/test/debug', function (Request $request) {
     return App::call('App\Http\Controllers\Bot@generateEventAction'
         , ['peerId' => 2000000003]
     );
+    return '{"status":"Congratulations! You have discovered a nothing!"}';
+
+
+    return App::call('App\Http\Controllers\Bot@generateBornDateConratulationsAction'
+        , ['peerId' => 2000000003]
+    );
+    return '{"status":"Congratulations! You have discovered a nothing!"}';
+    return App::call('App\Http\Controllers\Bot@generateEventAction'
+        , ['peerId' => 2000000003]
+    );
 
     return App::call('App\Http\Controllers\Bot@testAction', ['peerId' => 2000000005]);
     return App::call('App\Http\Controllers\Bot@sendMessageAction', ['peerId' => 2000000004]);

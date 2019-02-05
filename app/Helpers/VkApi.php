@@ -27,6 +27,17 @@ class VkApi
     }
 
     /**
+     * @param $chatId
+     * @return mixed
+     * @throws \Exception
+     */
+    public function getBdatesConversationsMembers($chatId)
+    {
+        $responseArray = $this->sendRequest('messages.getConversationMembers', ['peer_id' => $chatId, 'fields' => 'bdate']);
+        return $responseArray['profiles'];
+    }
+
+    /**
      * @param $peerId
      * @param $message
      * @return mixed
