@@ -90,6 +90,8 @@ class Bot extends Controller
             ->orderBy('chat_vk_id', 'ASC')
             ->get();
 
+        dump($chats);die;
+
         if (empty($chats)) {
             throw new \Error('No registered chats to generate event');
         }
