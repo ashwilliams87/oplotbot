@@ -168,7 +168,7 @@ class Bot extends Controller
         //get array of conversation members
         $vkService = VkApi::getInstance(env('VK_API_GROUP_TOKEN'));
         $usersIdsNotFiltered = array_diff($vkService->getConversationsMembers($chatVkId), self::$excludedIds);
-        dump($usersIdsNotFiltered);die;
+
         //we need filter peolple who doesn't want to be a winner
         $usersIds = [];
         foreach ($usersIdsNotFiltered as $itemUserId) {
