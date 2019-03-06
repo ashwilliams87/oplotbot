@@ -90,6 +90,7 @@ Route::get('/test/group', function () {
 
 Route::get('/test/debug', function (Request $request) {
 
+    die;
 
     return App::call('App\Http\Controllers\Bot@generateEventAction'
         , ['peerId' => 2000000001]
