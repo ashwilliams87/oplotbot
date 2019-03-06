@@ -24,17 +24,30 @@ Route::get('/test', function () {
     //{"type":"message_new","object":{"date":1546724571,"from_id":14363074,"id":0,"out":0,"peer_id":2000000001,"text":"[club176146542|Роланд Оплотов] КУУУ","conversation_message_id":9,"fwd_messages":[],"important":false,"random_id":0,"attachments":[],"is_hidden":false},"group_id":176146542}
 
 
-    //$method = 'messages.getConversations';
-    //$method = 'messages.getByConversationMessageId';
-    $method = 'messages.send';
+    $method = 'messages.getChat';
+    $method = 'messages.getConversation';
+    $method = 'messages.getConversations';
+    //$method = 'messages.getConversationsById';
 
+
+    //$method = 'messages.getByConversationMessageId';
+   // $method = 'messages.send';
+    //2000000001 тест
+    //2000000002 тест
+    //2000000003 блок
+    //2000000004 блок
+    //2000000005 ОПЛОТ
+    //2000000006 битые огурцы
+    //2000000007 Дельта28+
     //$method = 'messages.getConversationMembers';
     $message = ($_SERVER['HTTP_HOST'] . '_time:' . time() . '_message:KABOOM!');
-    $parameters = 'peer_id=2000000003&message=' . $message . '&random_id=1232132132';
+   // $parameters = 'peer_id=2000000001&message=' . $message . '&random_id=' . rand(11111, 65000);
+    $parameters = 'filter=all&random_id=' . rand(11111, 65000);
     //$parameters = 'peer_id=2000000045&message=BOOM!';.
+    dump('https://api.vk.com/method/' . $method . '?' . $parameters . '&access_token=' . env("VK_API_GROUP_TOKEN") . '&v=5.92');die;
     $r = file_get_contents('https://api.vk.com/method/' . $method . '?' . $parameters . '&access_token=' . env("VK_API_GROUP_TOKEN") . '&v=5.92');
 
-    dump($r);
+    dump(json_decode($r, true));
     die;
 });
 
@@ -76,6 +89,16 @@ Route::get('/test/group', function () {
 
 
 Route::get('/test/debug', function (Request $request) {
+
+    die;
+    return App::call('App\Http\Controllers\Bot@generateEventAction'
+        , ['peerId' => 2000000005]
+    );
+
+
+    return App::call('App\Http\Controllers\Bot@generateBornDateConratulationsAction'
+        , ['peerId' => 2000000007]
+    );
     return '{"status":"Congratulations! You have discovered a nothing!"}';
     return App::call('App\Http\Controllers\Bot@generateEventAction'
         , ['peerId' => 2000000003]

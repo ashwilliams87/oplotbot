@@ -11,7 +11,7 @@ use PhpParser\Error;
 
 class Bot extends Controller
 {
-    private static $excludedIds = [44418, 373336876, 290359383,-176146542];
+    private static $excludedIds = [44418, 373336876, 290359383, -176146542];
 
     /**
      * Store a new user.
@@ -166,9 +166,9 @@ class Bot extends Controller
     private function makeEvent($chatId, $chatVkId, $competitionTypeId, $competitionTypeName)
     {
         //get array of conversation members
-        $vkService = VkApi::getInstance(env('VK_API_USER_TOKEN'));
+        $vkService = VkApi::getInstance(env('VK_API_GROUP_TOKEN'));
         $usersIdsNotFiltered = array_diff($vkService->getConversationsMembers($chatVkId), self::$excludedIds);
-
+        dump($usersIdsNotFiltered);die;
         //we need filter peolple who doesn't want to be a winner
         $usersIds = [];
         foreach ($usersIdsNotFiltered as $itemUserId) {
@@ -222,7 +222,7 @@ class Bot extends Controller
     private function makeCongratulations($chatId, $chatVkId, $competitionTypeId, $competitionTypeName)
     {
         //get array of conversation members
-        $vkService = VkApi::getInstance(env('VK_API_USER_TOKEN'));
+        $vkService = VkApi::getInstance(env('VK_API_GROUP_TOKEN'));
         $chatUsers = $vkService->getBdatesConversationsMembers($chatVkId);
         $today = Carbon::now()->format('j.n');
 
@@ -230,7 +230,7 @@ class Bot extends Controller
         foreach ($chatUsers as $key => $user) {
             if (isset($user['bdate'])) {
                 $match = [];
-                preg_match('/(\d{1,2}.\d{1,2}).\d+/', $user['bdate'], $match);
+                preg_match('/([0-9]+\.[0-9]+)\.?[0-9]{0,}/', $user['bdate'], $match);
                 //если нашли совпадение по дате, и юзер не исключен
                 if (isset($match[1]) && $today == $match[1] && !in_array($user['id'], self::$excludedIds)) {
                     $congraz[] = '[id' . $user['id'] . '|' . $user['first_name'] . ' ' . $user['last_name'] . ']';
@@ -250,7 +250,6 @@ class Bot extends Controller
             sleep(7);
             $vkService->sendMessage($chatVkId, 'Искренне поздравляю от всего исходного кода! Желаю крепкого здоровья, исполнения всех желаний, эффективного достижения целей! Поздравляем!');
         }
-
         return;
     }
 

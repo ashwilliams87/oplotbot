@@ -21,6 +21,14 @@ Artisan::command('generateEventVkConversations  {--chatId=*} {--peerId=*} ', fun
         ['peerId' => intval(reset($peerId)), 'chatId' => intval(reset($chatId))]);
 });
 
+Artisan::command('generateBornDateVkConversations  {--chatId=*} {--peerId=*} ', function () {
+    $chatId = $this->option('chatId');
+    $peerId = $this->option('peerId');
+
+    App::call('App\Http\Controllers\Bot@generateBornDateConratulationsAction',
+        ['peerId' => intval(reset($peerId)), 'chatId' => intval(reset($chatId))]);
+});
+
 
 Artisan::command('inspire', function () {
 
