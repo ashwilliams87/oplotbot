@@ -67,10 +67,10 @@ class VkApi
     private function sendRequest($method, $parameters)
     {
         $response = file_get_contents(self::$vkApiHost . $method .
-            '?' . http_build_query(array_merge($parameters, ['random_id' => rand(10000, 99999), 'access_token' => $this->token, 'v' => 5.92])));
+            '?' . http_build_query(array_merge($parameters, ['random_id' => rand(10000, 99999), 'access_token' => $this->token, 'v' => 5.95])));
 
         $responseDecoded = json_decode($response, true);
-
+        //dump($responseDecoded);die;
         if (isset($responseDecoded['error'])) {
             throw new \Error('Ошибка работы с VkApi' . $responseDecoded['error']['error_code'] . ' ' . $responseDecoded['error']['error_msg']);
         }

@@ -11,7 +11,7 @@ use PhpParser\Error;
 
 class Bot extends Controller
 {
-    private static $excludedIds = [44418, 373336876, 290359383, -176146542];
+    private static $excludedIds = [44418, 373336876, 290359383, -176146542, 343886319, 525521409];
 
     /**
      * Store a new user.
@@ -22,10 +22,16 @@ class Bot extends Controller
      */
     public function sendMessageAction($peerId)
     {
-        //get array of conversation members
-        $vkService = VkApi::getInstance(env('VK_API_GROUP_TOKEN'));
-        $vkService->sendMessage($peerId, 'echo!');
-        return true;
+        try {
+            //get array of conversation members
+            $vkService = VkApi::getInstance(env('VK_API_GROUP_TOKEN'));
+            $vkService->sendMessage($peerId, 'Test!');
+        } catch (\Error $e) {
+            dump($e->getMessage());
+            die;
+        }
+
+        return 'ok!';
     }
 
     /**
@@ -85,6 +91,7 @@ class Bot extends Controller
                 'competition_type.id as competition_type_id',
                 'competition_type.competition_type_name'
             )
+            ->where('competition_chat.chat_active', '=', 1)
             ->join('competition_chat_event_type_link', 'competition_chat_event_type_link.chat_id', '=', 'competition_chat.id')
             ->join('competition_type', 'competition_type.id', '=', 'competition_chat_event_type_link.event_type_id')
             ->orderBy('chat_vk_id', 'ASC')
@@ -172,7 +179,7 @@ class Bot extends Controller
         //we need filter peolple who doesn't want to be a winner
         $usersIds = [];
         foreach ($usersIdsNotFiltered as $itemUserId) {
-            if (!in_array($itemUserId, self::$excludedIds)) {
+            if (!in_array($itemUserId, self::$excludedIds) && $itemUserId > 0) {
                 $usersIds[] = $itemUserId;
             }
         }
@@ -218,6 +225,56 @@ class Bot extends Controller
         return;
     }
 
+    /**
+     * @param $peerId
+     * @param null $chatId
+     * @return void
+     */
+    public function generate8MarchAction($peerId = null, $chatId = null)
+    {
+        $queryChats = Chat::query();
+
+        if ($peerId) {
+            $queryChats->where('competition_chat.chat_vk_id', '=', $peerId);
+        }
+
+        if ($chatId) {
+            $queryChats->where('competition_chat.id', '=', $chatId);
+        }
+
+        $chats = $queryChats
+            //->whereIn('competition_chat.id', [1, 2])
+            ->where('competition_chat.chat_active', '=', 1)
+            ->select(
+                'competition_chat.id as chat_id',
+                'competition_chat.chat_vk_id',
+                'competition_type.id as competition_type_id',
+                'competition_type.competition_type_name'
+            )
+            ->join('competition_chat_event_type_link', 'competition_chat_event_type_link.chat_id', '=', 'competition_chat.id')
+            ->join('competition_type', 'competition_type.id', '=', 'competition_chat_event_type_link.event_type_id')
+            ->orderBy('chat_vk_id', 'ASC')
+            ->get();
+        if (empty($chats)) {
+            throw new \Error('No registered chats to generate event');
+        }
+
+        foreach ($chats as $chat) {
+            try {
+
+                $this->makeCongratulations8March($chat->chat_id, $chat->chat_vk_id, $chat->competition_type_id, $chat->competition_type_name);
+                sleep(30);
+
+            } catch (\Error $e) {
+                \Illuminate\Support\Facades\Log::error('error', ['message' => $e->getMessage()]);
+                continue;
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('error', ['message' => $e->getMessage()]);
+                continue;
+            }
+        }
+
+    }
 
     private function makeCongratulations($chatId, $chatVkId, $competitionTypeId, $competitionTypeName)
     {
@@ -250,6 +307,17 @@ class Bot extends Controller
             sleep(7);
             $vkService->sendMessage($chatVkId, 'Искренне поздравляю от всего исходного кода! Желаю крепкого здоровья, исполнения всех желаний, эффективного достижения целей! Поздравляем!');
         }
+        return;
+    }
+
+    private function makeCongratulations8March($chatId, $chatVkId, $competitionTypeId, $competitionTypeName)
+    {
+        //get array of conversation members
+        $vkService = VkApi::getInstance(env('VK_API_GROUP_TOKEN'));
+
+        //we need filter peolple who doesn't want to be a winner
+        $vkService->sendMessage($chatVkId, 'Милые девушки! От всего исходного кода желаю Вам расцвести этой весной! Пускай эта весна подарит много добра, позитива и тепла! Желаю море солнечных улыбок, искренней любви и крепкого здоровья! С 8 марта!');
+        sleep(7);
         return;
     }
 

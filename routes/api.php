@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Saitama\Task;
 use Illuminate\Http\Request;
 
 /*
@@ -31,7 +32,7 @@ Route::get('/test', function () {
 
 
     //$method = 'messages.getByConversationMessageId';
-   // $method = 'messages.send';
+    // $method = 'messages.send';
     //2000000001 тест
     //2000000002 тест
     //2000000003 блок
@@ -41,10 +42,11 @@ Route::get('/test', function () {
     //2000000007 Дельта28+
     //$method = 'messages.getConversationMembers';
     $message = ($_SERVER['HTTP_HOST'] . '_time:' . time() . '_message:KABOOM!');
-   // $parameters = 'peer_id=2000000001&message=' . $message . '&random_id=' . rand(11111, 65000);
+    // $parameters = 'peer_id=2000000001&message=' . $message . '&random_id=' . rand(11111, 65000);
     $parameters = 'filter=all&random_id=' . rand(11111, 65000);
     //$parameters = 'peer_id=2000000045&message=BOOM!';.
-    dump('https://api.vk.com/method/' . $method . '?' . $parameters . '&access_token=' . env("VK_API_GROUP_TOKEN") . '&v=5.92');die;
+    dump('https://api.vk.com/method/' . $method . '?' . $parameters . '&access_token=' . env("VK_API_GROUP_TOKEN") . '&v=5.92');
+    die;
     $r = file_get_contents('https://api.vk.com/method/' . $method . '?' . $parameters . '&access_token=' . env("VK_API_GROUP_TOKEN") . '&v=5.92');
 
     dump(json_decode($r, true));
@@ -68,20 +70,33 @@ Route::get('/latest', function (Request $request) {
     }
 });
 
+Route::get('/saitama/tasks', function (Request $request) {
+    $taskCollection = Task::query()
+        ->select('id', 'task_name'
+        )
+        ->orderBy('id', 'ASC')
+        ->get();
+    return $taskCollection->toArray();
+});
+
+
 Route::get('/test/group', function () {
     return '{"status":"Congratulations! You have discovered a nothing!"}';
     //https://oauth.vk.com/authorize?client_id=6816973&display=page&redirect_uri=https://oauth.vk.com/blank.html&scope=friends&response_type=token&v=5.52&scope=messages,notify,groups,offline,friends,email
     //{"type":"message_new","object":{"date":1546724691,"from_id":14363074,"id":2,"out":0,"peer_id":14363074,"text":"КУУУУ","conversation_message_id":2,"fwd_messages":[],"important":false,"random_id":0,"attachments":[],"is_hidden":false},"group_id":176146542}
     //{"type":"message_new","object":{"date":1546724571,"from_id":14363074,"id":0,"out":0,"peer_id":2000000001,"text":"[club176146542|Роланд Оплотов] КУУУ","conversation_message_id":9,"fwd_messages":[],"important":false,"random_id":0,"attachments":[],"is_hidden":false},"group_id":176146542}
 
-    $token = env('VK_API_USER_TOKEN');
-    //$method = 'messages.getConversations';
+    $token = env('VK_API_GROUP_TOKEN');
+    $method = 'messages.getConversations';
+    $method = 'messages.searchConversations';
     //$method = 'messages.getByConversationMessageId';
 
-    $method = 'messages.getConversationMembers';
-    $message = ($_SERVER['HTTP_HOST'] . '_time:' . time() . '_message:KABOOM!');
-    $parameters = 'peer_id=2000000008&random_id=' . rand(10000, 65536);
-    $r = file_get_contents('https://api.vk.com/method/' . $method . '?' . $parameters . '&access_token=' . $token . '&v=5.92');
+    //  $method = 'messages.getConversationMembers';
+    //$message = ($_SERVER['HTTP_HOST'] . '_time:' . time() . '_message:KABOOM!');
+    $parameters = 'group_id=176146542&random_id=' . rand(10000, 65536);
+    //conversatinop
+    $parameters = 'group_id=176146542&random_id=' . rand(10000, 65536);
+    $r = file_get_contents('https://api.vk.com/method/' . $method . '?' . $parameters . '&access_token=' . $token . '&v=5.95');
 
     dump($r);
     die;
@@ -89,13 +104,32 @@ Route::get('/test/group', function () {
 
 
 Route::get('/test/debug', function (Request $request) {
-
+    die('ok');
     die;
 
+    $request->query->get('peer_id');
+    $peer_id = 2000000003;
+    if (!empty($request->query->get('peer_id'))) {
+        $peer_id = $request->query->get('peer_id');
+    }
+
     return App::call('App\Http\Controllers\Bot@generateEventAction'
-        , ['peerId' => 2000000001]
+        , ['peerId' => $peer_id]
+    );
+    return App::call('App\Http\Controllers\Bot@sendMessageAction', ['peerId' => $peer_id]);
+    die;
+    return App::call('App\Http\Controllers\Bot@generateEventAction'
+        , ['peerId' => $peer_id]
     );
 
+    return App::call('App\Http\Controllers\Bot@sendMessageAction', ['peerId' => $peer_id]);
+
+    return App::call('App\Http\Controllers\Bot@sendMessageAction', ['peerId' => 2000000006]);
+
+    return App::call('App\Http\Controllers\Bot@generateEventAction'
+        , ['peerId' => 2000000006]
+    );
+    die;
 
     return App::call('App\Http\Controllers\Bot@generateBornDateConratulationsAction'
         , ['peerId' => 2000000007]
@@ -114,7 +148,7 @@ Route::get('/test/debug', function (Request $request) {
     );
 
     return App::call('App\Http\Controllers\Bot@testAction', ['peerId' => 2000000005]);
-    return App::call('App\Http\Controllers\Bot@sendMessageAction', ['peerId' => 2000000004]);
+
     return App::call('App\Http\Controllers\Bot@registerChatForCompetitions', ['peerId' => 2000000004]);
     return App::call('App\Http\Controllers\Bot@generateEventAction', ['peerId' => 2000000004]);
     die;
