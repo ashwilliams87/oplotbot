@@ -289,7 +289,8 @@ class Bot extends Controller
                 $match = [];
                 preg_match('/([0-9]+\.[0-9]+)\.?[0-9]{0,}/', $user['bdate'], $match);
                 //если нашли совпадение по дате, и юзер не исключен
-                if (isset($match[1]) && $today == $match[1] && !in_array($user['id'], self::$excludedIds)) {
+                //"11.1" == "11.10" === true
+                if (isset($match[1]) && $today === $match[1] && !in_array($user['id'], self::$excludedIds)) {
                     $congraz[] = '[id' . $user['id'] . '|' . $user['first_name'] . ' ' . $user['last_name'] . ']';
                 }
             }
