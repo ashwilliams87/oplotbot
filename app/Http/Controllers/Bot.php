@@ -11,7 +11,7 @@ use PhpParser\Error;
 
 class Bot extends Controller
 {
-    private static $excludedIds = [44418, 373336876, 290359383, -176146542, 343886319, 525521409];
+    private static $excludedIds = [44418,60190045, 373336876, 290359383, -176146542, 343886319, 525521409];
 
     /**
      * Store a new user.
@@ -170,6 +170,13 @@ class Bot extends Controller
     }
 
 
+    /**
+     * @param $chatId
+     * @param $chatVkId
+     * @param $competitionTypeId
+     * @param $competitionTypeName
+     * @throws \Exception
+     */
     private function makeEvent($chatId, $chatVkId, $competitionTypeId, $competitionTypeName)
     {
         //get array of conversation members
@@ -289,7 +296,8 @@ class Bot extends Controller
                 $match = [];
                 preg_match('/([0-9]+\.[0-9]+)\.?[0-9]{0,}/', $user['bdate'], $match);
                 //если нашли совпадение по дате, и юзер не исключен
-                if (isset($match[1]) && $today == $match[1] && !in_array($user['id'], self::$excludedIds)) {
+                //"11.1" == "11.10" === true
+                if (isset($match[1]) && $today === $match[1] && !in_array($user['id'], self::$excludedIds)) {
                     $congraz[] = '[id' . $user['id'] . '|' . $user['first_name'] . ' ' . $user['last_name'] . ']';
                 }
             }
